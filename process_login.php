@@ -5,34 +5,34 @@ require 'db_connect.php';
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-
-$sql = "SELECT * FROM admins WHERE username = ? LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+// check if user is in 'admins' table
+$query = $conn->prepare("SELECT * FROM admins WHERE username = ? AND password = ?");
+$query->bind_param("ss", $username, $password);
+$query->execute();
+$result = $query->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
-
-    // verify pw - so this is actually hashed so goodluck on that.
-    // jk its in register.php for debugging --- the password_hash() // for encryption - just search what it does
-    if (password_verify($password, $user['password'])) {
-
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = 'admin';  
-        header("Location: admin_dashboard.php");
-        exit();
-    } else {
-
-        $_SESSION['error_message'] = "Wrong username or password!";
-        header("Location: index.php");
-        exit();
-    }
-} else {
-
-    $_SESSION['error_message'] = "Wrong username or password!";
-    header("Location: index.php");
-    exit();
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['user_type'] = 'admin'; // set user_type
+    header("Location: admin_dashboard.php");
+    exit;
 }
+
+// check if user is in 'users' table
+$query = $conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+$query->bind_param("ss", $username, $password);
+$query->execute();
+$result = $query->get_result();
+
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['user_type'] = 'user'; // set user_type
+    header("Location: user_dashboard.php");
+    exit;
+}
+
+// invalid login
+echo "Invalid username or password.";
 ?>
