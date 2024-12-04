@@ -8,7 +8,7 @@ if (!isset($_SESSION['username'])) {
 
 include 'header.php';
 include 'navbar.php';
-include 'sidebar.php';
+include 'usidebar.php';
 include 'db_connect.php';
 
 // total products
