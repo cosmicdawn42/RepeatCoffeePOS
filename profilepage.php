@@ -1,32 +1,34 @@
 <?php
 session_start();
+require 'db_connect.php';
+
 
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_type'])) {
-    header("Location: index.php");
-    exit();
+    header('Location: index.php'); 
+    exit;
+}
+$username = $_SESSION['username'];
+$userType = $_SESSION['user_type']; //
+
+if ($userType === 'admin') {
+    $query = $conn->prepare("SELECT * FROM admins WHERE username = ?");
+} elseif ($userType === 'user') {
+    $query = $conn->prepare("SELECT * FROM users WHERE username = ?");
+} else {
+    echo "Error: Invalid user type.";
+    exit;
 }
 
-include 'db_connect.php';
-
-$username = $_SESSION['username'];
-$user_type = $_SESSION['user_type']; // 'admin' or 'user'
-
-$table = $user_type === 'admin' ? 'admins' : 'users';
-
-
-$stmt = $conn->prepare("SELECT id, name, email, phone, username FROM $table WHERE username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+$query->bind_param('s', $username);
+$query->execute();
+$result = $query->get_result();
 
 if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
+    $user = $result->fetch_assoc(); // Fetch user data
 } else {
-    die("User not found.");
+    echo "Error: User not found.";
+    exit;
 }
-
-$stmt->close();
-$conn->close();
 ?>
 
 <?php include 'header.php'; ?>
@@ -40,24 +42,20 @@ $conn->close();
             <hr>
             <table class="profiletbl">
                 <tr>
-                    <td>Employee ID:</td>
+                    <td><strong>Employee ID:</strong></td>
                     <td><?php echo htmlspecialchars($user['id']); ?></td>
                 </tr>
                 <tr>
-                    <td>Name:</td>
+                    <td><strong>Name:</strong></td>
                     <td><?php echo htmlspecialchars($user['name']); ?></td>
                 </tr>
                 <tr>
-                    <td>Email:</td>
-                    <td><?php echo htmlspecialchars($user['email']); ?></td>
-                </tr>
-                <tr>
-                    <td>Phone:</td>
+                    <td><strong>Contact Information:</strong></td>
                     <td><?php echo htmlspecialchars($user['phone']); ?></td>
                 </tr>
                 <tr>
-                    <td>Username:</td>
-                    <td><?php echo htmlspecialchars($user['username']); ?></td>
+                    <td><strong>Email:</strong></td>
+                    <td><?php echo htmlspecialchars($user['email']); ?></td>
                 </tr>
             </table>
         </div>
