@@ -9,7 +9,14 @@
     </div>
     <div class="pfp-dropdown">
         <a href="" class="dropdown-toggle">
-            <i class="fi fi-ss-user"></i>Admin <!-- This will display the admin name -->
+            <i class="fi fi-ss-user"></i>
+            <?php 
+            if (isset($_SESSION['user_type'])) {
+                echo ucfirst($_SESSION['user_type']); // displays 'Admin' or 'User'
+            } else {
+                echo "Menu"; // fallback for unexpected cases
+            }
+            ?>
             <i class="fi fi-ss-angle-small-down"></i>
         </a>
         <ul class="pfp-menu">
