@@ -24,7 +24,6 @@ $result = $conn->query($sql);
                             <th>Name</th>
                             <th>Price</th>
                             <th>Quantity</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,11 +36,6 @@ $result = $conn->query($sql);
                                 <td><?php echo $product['prod_name']; ?></td>
                                 <td><?php echo number_format($product['prod_price'], 2); ?></td>
                                 <td><?php echo $product['prod_qty']; ?></td>
-                                <td>
-                                    <a href="edit_prod.php?id=<?php echo $product['prod_id']; ?>">Edit</a>
-                                    | 
-                                    <a href="delete_prod.php?id=<?php echo $product['prod_id']; ?>" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
-                                </td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>
